@@ -1,0 +1,18 @@
+<video
+  #videoElement
+  playsinline
+  muted
+  preload="auto"
+  (ended)="onEnded()"
+  (timeupdate)="onTimeUpdate($any($event).target.currentTime)"
+  (volumechange)="onVolumeChange($event)"
+  (error)="error$.next(true)"
+  (stalled)="error$.next(true)"
+  (canplay)="loading$.next(false)"
+  (playing)="loading$.next(false); error$.next(false); finished$.next(false)"
+  (waiting)="loading$.next(true)"
+>
+  @if (renderVideo()) {
+    <source [src]="data().src" [type]="data().type" />
+  }
+</video>

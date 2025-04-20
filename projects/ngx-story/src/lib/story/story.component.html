@@ -1,0 +1,53 @@
+<div class="main-container">
+  <ng-template #storyItemsHost></ng-template>
+  <div
+    #overlay
+    class="overlay"
+    ngxLongPress
+    (click)="onOverlayClick($event)"
+    (longPressStart)="onLongPressStart()"
+    (longPressEnd)="onLongPressEnd()"
+    oncontextmenu="return false"
+  >
+    <div class="progressbars" [style.opacity]="paused() ? 0 : 1">
+      @for (item of dataSource(); let i = $index; track item) {
+        <div class="progressbar-container" [style.width]="100 / dataSource().length + '%'" [class.finished]="idx() > i">
+          @if (idx() === i) {
+            <div class="progressbar" [style.width]="currentItemProgress() * 100 + '%'"></div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="main-status-indicator">
+      @if (currentItemError()) {
+        <div (click)="onPlayButtonClick($event)" style="display: flex; flex-direction: column; align-items: center; gap: 24px">
+          <div class="icon-wrapper">
+            <img src="/assets/ngx-story/play.svg" />
+          </div>
+          <div style="background: black; padding: 4px; border-radius: 4px; color: whitesmoke">Tap to play</div>
+        </div>
+      }
+      @if (currentItemLoading()) {
+        <div class="loader"></div>
+      }
+      @if (currentItemMuted()) {
+        <div (click)="onUnmuteButtonClick($event)" class="icon-wrapper">
+          <img src="/assets/ngx-story/muted.svg" />
+        </div>
+      }
+    </div>
+
+    <div class="actions" [style.opacity]="paused() ? 0 : 1" (click)="$event.stopPropagation()">
+      <ng-content select="[actions]"></ng-content>
+    </div>
+
+    @if (showCta()) {
+      <div class="cta" [style.opacity]="paused() ? 0 : 1" (click)="$event.stopPropagation()">
+        <div class="cta-content">
+          <ng-content select="[cta]"></ng-content>
+        </div>
+      </div>
+    }
+  </div>
+</div>

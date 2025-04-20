@@ -1,0 +1,7 @@
+@if (data()) {
+  <div class="backdrop" [style.background-image]="renderImage() ? 'url(' + data().src + ')' : 'none'">
+    @if (renderImage()) {
+      <img [src]="data().src" (error)="error$.next(true)" />
+    }
+  </div>
+}
