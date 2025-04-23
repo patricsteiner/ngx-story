@@ -18,21 +18,14 @@ Once the project is built, you can publish your library by following these steps
 
 1. Navigate to the `dist` directory:
 
-   ```bash
-   cd dist/ngx-story
-   ```
+```bash
+cd dist/ngx-story
+```
 
 2. Run the `npm publish` command to publish your library to the npm registry:
-   ```bash
-   npm publish
-   ```
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
 
 ```bash
-ng test
+npm publish
 ```
 
 ## Additional Resources

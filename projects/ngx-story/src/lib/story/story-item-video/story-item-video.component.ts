@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, signal, ViewChild, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, input, viewChild } from '@angular/core';
 import { StoryItemComponent } from '../story-item.component';
 import { BehaviorSubject } from 'rxjs';
 
@@ -19,8 +19,7 @@ export class StoryItemVideoComponent implements StoryItemComponent {
   muted$ = new BehaviorSubject(false);
   finished$ = new BehaviorSubject(false);
 
-  @ViewChild('videoElement', { static: false })
-  videoElement!: ElementRef<HTMLVideoElement>;
+  readonly videoElement = viewChild.required<ElementRef<HTMLVideoElement>>('videoElement');
 
   renderVideo = signal(false);
 
@@ -34,27 +33,28 @@ export class StoryItemVideoComponent implements StoryItemComponent {
   }
 
   onTimeUpdate(time: number) {
-    const progress = time / this.videoElement.nativeElement.duration;
+    const progress = time / this.videoElement().nativeElement.duration;
     this.progress$.next(progress);
     // Some browsers don't properly listen to the volumeChange event, therefore we assure here to manually set the `muted$` value if it wasn't picked up by the listener.
-    if (this.muted$.value !== this.videoElement.nativeElement.muted && this.hasAudio(this.videoElement.nativeElement)) {
-      this.muted$.next(this.videoElement.nativeElement.muted);
+    const videoElement = this.videoElement();
+    if (this.muted$.value !== videoElement.nativeElement.muted && this.hasAudio(videoElement.nativeElement)) {
+      this.muted$.next(videoElement.nativeElement.muted);
     }
   }
 
   pause() {
-    this.videoElement?.nativeElement?.pause();
+    this.videoElement()?.nativeElement?.pause();
   }
 
   play() {
     setTimeout(async () => {
       this.mute(false);
       try {
-        await this.videoElement.nativeElement.play();
+        await this.videoElement().nativeElement.play();
       } catch (e: any) {
         this.mute(true);
         try {
-          await this.videoElement.nativeElement.play();
+          await this.videoElement().nativeElement.play();
         } catch (e: any) {
           this.mute(false);
           this.error$.next(e);
@@ -67,8 +67,9 @@ export class StoryItemVideoComponent implements StoryItemComponent {
     // this is wrapped in a timeout because for some reason it takes a while to set attributes like currentTime and muted on a video nativeElement
     setTimeout(() => {
       this.finished$.next(false);
-      if (this.videoElement?.nativeElement) {
-        this.videoElement.nativeElement.currentTime = 0;
+      const videoElement = this.videoElement();
+      if (videoElement?.nativeElement) {
+        videoElement.nativeElement.currentTime = 0;
       }
     }, 10);
   }
@@ -80,9 +81,10 @@ export class StoryItemVideoComponent implements StoryItemComponent {
   }
 
   mute(muted = true) {
-    if (this.videoElement) {
-      this.videoElement.nativeElement.volume = 1;
-      this.videoElement.nativeElement.muted = muted;
+    const videoElement = this.videoElement();
+    if (videoElement) {
+      videoElement.nativeElement.volume = 1;
+      videoElement.nativeElement.muted = muted;
     }
   }
 

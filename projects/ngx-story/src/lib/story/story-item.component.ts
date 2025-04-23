@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { StoryItemData } from '../models';
+import { StoryItemData } from './models';
 import { Signal } from '@angular/core';
 
 export interface StoryItemComponent {

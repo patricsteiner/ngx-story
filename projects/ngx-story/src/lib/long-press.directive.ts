@@ -1,15 +1,13 @@
-import { Directive, ElementRef, EventEmitter, Output } from '@angular/core';
+import { Directive, ElementRef, output } from '@angular/core';
 import { fromEvent, merge, of, timer } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Directive({ selector: '[ngxLongPress]' })
 export class LongPressDirective {
-  @Output()
-  longPressStart = new EventEmitter<void>();
+  readonly longPressStart = output<void>();
 
-  @Output()
-  longPressEnd = new EventEmitter<void>();
+  readonly longPressEnd = output<void>();
 
   private isDown = false;
 

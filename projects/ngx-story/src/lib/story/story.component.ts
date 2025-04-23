@@ -3,22 +3,21 @@ import {
   Component,
   ComponentRef,
   ElementRef,
-  EventEmitter,
   OnDestroy,
   OnInit,
-  Output,
   Renderer2,
   signal,
-  ViewChild,
   ViewContainerRef,
   input,
+  viewChild,
+  output,
 } from '@angular/core';
 import { StoryItemComponent } from './story-item.component';
 import { StoryItemVideoComponent } from './story-item-video/story-item-video.component';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { StoryItemImageComponent } from './story-item-image/story-item-image.component';
-import { StoryItemData } from '../models';
+import { StoryItemData } from './models';
 import { LongPressDirective } from '../long-press.directive';
 
 /**
@@ -49,14 +48,11 @@ import { LongPressDirective } from '../long-press.directive';
 export class StoryComponent implements OnInit, OnDestroy {
   readonly dataSource = input.required<StoryItemData[]>();
 
-  @Output()
-  readonly pageChanged = new EventEmitter<number>();
+  readonly pageChanged = output<number>();
 
-  @Output()
-  readonly lastPageReached = new EventEmitter<void>();
+  readonly lastPageReached = output<void>();
 
-  @Output()
-  readonly finished = new EventEmitter<void>();
+  readonly finished = output<void>();
 
   idx = signal(0);
   paused = signal(false);
@@ -66,10 +62,8 @@ export class StoryComponent implements OnInit, OnDestroy {
   currentItemMuted = signal(false);
   showCta = signal(false);
 
-  @ViewChild('storyItemsHost', { static: true, read: ViewContainerRef })
-  private storyItemsHost!: ViewContainerRef;
-  @ViewChild('overlay')
-  private overlay!: ElementRef<HTMLDivElement>;
+  private readonly storyItemsHost = viewChild.required('storyItemsHost', { read: ViewContainerRef });
+  private readonly overlay = viewChild.required<ElementRef<HTMLDivElement>>('overlay');
 
   private longPressEndedAt?: Date;
   private storyItemComponentRefs: ComponentRef<StoryItemComponent>[] = [];
@@ -86,7 +80,7 @@ export class StoryComponent implements OnInit, OnDestroy {
     }
     dataSource.forEach((dataSourceItem, i) => {
       const componentClass = dataSourceItem.type === 'video/mp4' ? StoryItemVideoComponent : StoryItemImageComponent;
-      const componentRef = this.storyItemsHost.createComponent<StoryItemComponent>(componentClass);
+      const componentRef = this.storyItemsHost().createComponent<StoryItemComponent>(componentClass);
       componentRef.setInput('data', { src: dataSourceItem.src, type: dataSourceItem.type });
       if (i < 2) {
         // always (pre-)load the first two items
@@ -162,7 +156,7 @@ export class StoryComponent implements OnInit, OnDestroy {
     if (this.longPressEndedAt && new Date().getTime() - this.longPressEndedAt?.getTime() <= 10) {
       return;
     }
-    if (event.offsetX > this.overlay.nativeElement.offsetWidth / 2) {
+    if (event.offsetX > this.overlay().nativeElement.offsetWidth / 2) {
       this.next();
     } else {
       this.prev();
