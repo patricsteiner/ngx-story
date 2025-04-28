@@ -3,3 +3,4 @@
  */
 
 export * from './lib/story/story.component';
+export * from './lib/story/models';

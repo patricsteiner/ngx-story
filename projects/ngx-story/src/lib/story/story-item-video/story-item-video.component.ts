@@ -43,7 +43,9 @@ export class StoryItemVideoComponent implements StoryItemComponent {
   }
 
   pause() {
-    this.videoElement()?.nativeElement?.pause();
+    if (this.videoElement()?.nativeElement) {
+      this.videoElement().nativeElement.pause();
+    }
   }
 
   play() {
